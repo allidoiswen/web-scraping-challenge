@@ -1,0 +1,82 @@
+    # Define variables
+    url = 'https://mars.nasa.gov/news/'
+
+    '''The NASA website cannot be reqested correctly using requests.get()'''
+    # # Retrieve page with the requests module
+    # response = requests.get(url)
+    # # Create BeautifulSoup object; parse with 'lxml'
+    # soup = bs(response.text, 'html.parser')
+
+    # Bring in the Chrome Driver
+    executable_path = {'executable_path': 'chromedriver.exe'}
+    browser = Browser('chrome', **executable_path, headless=False)
+
+    # Connect to the url
+    browser.visit(url)
+    time.sleep(3)
+
+    # Open the website in Chrome
+    html = browser.html
+    soup = bs(html, 'html.parser')
+
+    # find all the news
+    news_list = soup.find_all('li', class_ = 'slide')
+
+    # find the Mars article title
+    news_title = news_list[0].find_all('div', class_ = 'content_title')
+    news_title = str(news_title).split('>')[2]
+    news_title = news_title.replace('</a', '') #Clean the clsoing </a> tag
+
+    # find the paragraph
+    news_p = news_list[0].find_all('div', class_ = 'article_teaser_body')
+    news_p = str(news_p).split('>')[1]
+    news_p = news_p.replace('</div', '')
+    
+    return news_title, news_p
+
+
+# # Create a dictionary to store all aricles data
+# news_dict = {
+#     'article_date' : [],
+#     'title'        : [],
+#     'paragraph'    : [],
+#     'link'         : [],
+#     'img_link'     : [],
+# }
+
+# for article in news_list:
+#     # find the Mars article date
+#     news_date = article.find_all('div', class_ = 'list_date')
+#     news_date = str(news_date).split('>')[1]
+#     news_date = news_date.replace('</div', '')
+
+#     # find the title
+#     news_title = article.find_all('div', class_ = 'content_title')
+#     news_title = str(news_title).split('>')[2]
+#     news_title = news_title.replace('</a', '') #Clean the clsoing </a> tag
+
+#     # find the paragraph
+#     news_p = article.find_all('div', class_ = 'article_teaser_body')
+#     news_p = str(news_p).split('>')[1]
+#     news_p = news_p.replace('</div', '')
+    
+#     # find the url
+#     news_url = article.find_all('div', class_ = 'content_title')
+#     news_url = str(news_url).split('"')[3]
+#     news_url = 'https://mars.nasa.gov' + news_url
+    
+#     # find img
+#     news_img = article.find_all('div', class_ = 'list_image')
+#     news_img = str(news_img).split('src="')[1].split('"')[0]
+#     news_img = 'https://mars.nasa.gov' + news_img
+    
+#     # Store into the dictionary
+#     news_dict['article_date'].append(news_date)
+#     news_dict['title'].append(news_title)
+#     news_dict['paragraph'].append(news_p)
+#     news_dict['link'].append(news_url)
+#     news_dict['img_link'].append(news_img)
+
+# # Store the data into a Dateframe and save it
+# news_pd = pd.DataFrame(news_dict)
+# news_pd.to_csv('nasa_mars_news.csv', index = False)
